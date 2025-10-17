@@ -1,103 +1,144 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
+import emailjs from "@emailjs/nodejs";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [status, setStatus] = useState<
+    | { type: "idle" }
+    | { type: "loading" }
+    | { type: "success"; message: string }
+    | { type: "error"; message: string }
+  >({ type: "idle" });
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID as string | undefined;
+  const templateId = "template_123456789"
+  const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY as string | undefined;
+
+  const onChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!form.name || !form.email || !form.message) {
+      setStatus({ type: "error", message: "Please fill out all fields." });
+      return;
+    }
+
+    if (!serviceId || !templateId || !publicKey) {
+      setStatus({
+        type: "error",
+        message:
+          "Email service is not configured. Please set the required environment variables.",
+      });
+      return;
+    }
+
+    setStatus({ type: "loading" });
+
+    try {
+      const params = {
+        from_name: form.name,
+        reply_to: form.email,
+        message: form.message,
+      } as Record<string, unknown>;
+
+      await emailjs.send(serviceId, templateId, params, { publicKey });
+      setStatus({ type: "success", message: "Message sent! We'll be in touch." });
+      setForm({ name: "", email: "", message: "" });
+    } catch (err) {
+      setStatus({
+        type: "error",
+        message: "Something went wrong sending your message. Please try again later.",
+      });
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-black text-yellow-500 flex items-center justify-center p-6">
+      <div className="w-full max-w-3xl flex flex-col items-center gap-8">
+        <Image
+          src="/TX BG.png"
+          alt="Company Logo"
+          width={260}
+          height={260}
+          priority
+          className="w-40 h-auto sm:w-52 md:w-64 object-contain"
+        />
+
+        <div className="text-center space-y-2">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-wide">
+            Coming Soon
+          </h1>
+          <p className="text-yellow-400/80 text-base md:text-lg">
+            We are crafting something exceptional. Stay tuned!
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+
+        <form
+          onSubmit={onSubmit}
+          className="w-full bg-neutral-900/60 rounded-xl p-5 sm:p-6 md:p-8 border border-yellow-500/20 shadow-[0_0_0_1px_rgba(255,215,0,0.06)]"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <h2 className="text-2xl font-semibold mb-4">Contact Us</h2>
+          <div className="grid gap-4">
+            <label className="grid gap-2">
+              <span className="text-sm text-yellow-400/80">Name</span>
+              <input
+                name="name"
+                type="text"
+                value={form.name}
+                onChange={onChange}
+                required
+                className="px-3 py-2 rounded-md bg-black/60 border border-yellow-500/30 text-yellow-100 placeholder:text-yellow-100/40 outline-none focus:ring-2 focus:ring-yellow-500/60"
+                placeholder="Your name"
+              />
+            </label>
+            <label className="grid gap-2">
+              <span className="text-sm text-yellow-400/80">Email</span>
+              <input
+                name="email"
+                type="email"
+                value={form.email}
+                onChange={onChange}
+                required
+                className="px-3 py-2 rounded-md bg-black/60 border border-yellow-500/30 text-yellow-100 placeholder:text-yellow-100/40 outline-none focus:ring-2 focus:ring-yellow-500/60"
+                placeholder="you@example.com"
+              />
+            </label>
+            <label className="grid gap-2">
+              <span className="text-sm text-yellow-400/80">Message</span>
+              <textarea
+                name="message"
+                value={form.message}
+                onChange={onChange}
+                required
+                rows={4}
+                className="px-3 py-2 rounded-md bg-black/60 border border-yellow-500/30 text-yellow-100 placeholder:text-yellow-100/40 outline-none focus:ring-2 focus:ring-yellow-500/60 resize-y"
+                placeholder="How can we help?"
+              />
+            </label>
+            <button
+              type="submit"
+              disabled={status.type === "loading"}
+              className="mt-2 inline-flex items-center justify-center rounded-md bg-yellow-500 text-black font-semibold px-4 py-2 transition-colors hover:bg-yellow-400 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {status.type === "loading" ? "Sending..." : "Send Message"}
+            </button>
+            {status.type === "error" && (
+              <p className="text-red-400 text-sm">{status.message}</p>
+            )}
+            {status.type === "success" && (
+              <p className="text-green-400 text-sm">{status.message}</p>
+            )}
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
