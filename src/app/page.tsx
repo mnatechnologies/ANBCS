@@ -14,7 +14,7 @@ export default function Home() {
   >({ type: "idle" });
 
   const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID as string | undefined;
-  const templateId = "template_123456789"
+  const templateId = "template_yis1nup"
   const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY as string | undefined;
 
   const onChange = (
