@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+    font-family: 'Ethnocentric';
+    src: url('/fonts/Ethnocentric-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -10,6 +18,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+    --font-ethnocentric: 'Ethnocentric', sans-serif;
+
 }
 
 @media (prefers-color-scheme: dark) {

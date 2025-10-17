@@ -73,10 +73,10 @@ export default function Home() {
         />
 
         <div className="text-center space-y-2">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-wide">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-wide font-ethnocentric">
             Coming Soon
           </h1>
-          <p className="text-yellow-400/80 text-base md:text-lg">
+          <p className="text-yellow-400/80 text-base md:text-lg font-ethnocentric">
             We are crafting something exceptional. Stay tuned!
           </p>
         </div>
